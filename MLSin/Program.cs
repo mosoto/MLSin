@@ -13,12 +13,21 @@ namespace MLSin
         {
             try
             {
-                var enumerator = CircularRange.NewRange(4, 2 * Math.PI);
+                var enumerator = CircularRange.NewRange(4, 2*Math.PI)
+                    .Select(ToDoubleArray)
+                    .GetEnumerator();
 
-                for (int count = 0; count < 20; count++)
+                SpatialPooler pooler = new SpatialPooler(10, 8, 3);
+
+                for (int count = 0; count < 1000; count++)
                 {
                     enumerator.MoveNext();
-                    Console.WriteLine(enumerator.Current);
+                    var output = pooler.ProcessInput(enumerator.Current);
+
+                    string inputStr = ArrayToString(enumerator.Current);
+                    string outputStr = ArrayToString(output);
+                    Console.WriteLine($"> {inputStr}");
+                    Console.WriteLine($"< {outputStr}");
                 }
             }
             catch (Exception e)
@@ -28,6 +37,29 @@ namespace MLSin
 
             Console.WriteLine("Press any key...");
             Console.ReadKey();
+        }
+
+        static string ArrayToString<T>(T[] arr)
+        {
+            string str = string.Join(" ", arr);
+            return $"{{{str}}}";
+        }
+
+        static double[] ToDoubleArray(double value)
+        {
+            var output = new double[8];
+
+            var bitArr =new BitArray(BitConverter.GetBytes(Convert.ToInt32(value*10)).ToArray());
+            
+            for (int index = 0; index < bitArr.Length; index++)
+            {
+                if (bitArr[index])
+                {
+                    output[index] = 1;
+                }
+            }
+
+            return output;
         }
     }
 }

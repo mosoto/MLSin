@@ -5,7 +5,7 @@ namespace MLSin
 {
     public static class CircularRange
     {
-        public static IEnumerator<double> NewRange(int numPoints, double maxNum)
+        public static IEnumerable<double> NewRange(int numPoints, double maxNum)
         {
             double deltaIncrement = maxNum / numPoints;
 
