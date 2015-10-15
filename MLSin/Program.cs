@@ -17,17 +17,22 @@ namespace MLSin
                     .Select(ToDoubleArray)
                     .GetEnumerator();
 
-                SpatialPooler pooler = new SpatialPooler(10, 8, 3);
+                SpatialPooler pooler = new SpatialPooler(10, 8, 2);
 
-                for (int count = 0; count < 1000; count++)
+                int trainCycles = 100000;
+                for (int count = 0; count < trainCycles; count++)
                 {
                     enumerator.MoveNext();
                     var output = pooler.ProcessInput(enumerator.Current);
 
                     string inputStr = ArrayToString(enumerator.Current);
                     string outputStr = ArrayToString(output);
-                    Console.WriteLine($"> {inputStr}");
-                    Console.WriteLine($"< {outputStr}");
+
+                    if (count > trainCycles - 20)
+                    {
+                        Console.WriteLine($"> {inputStr}");
+                        Console.WriteLine($"< {outputStr}");
+                    }
                 }
             }
             catch (Exception e)

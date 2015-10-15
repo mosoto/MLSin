@@ -14,7 +14,10 @@ namespace MLSin
         private double _learningRate;
         private double _maxSynapseWeight;
 
-        public Neuron(int numInputs, double learningRate, double maxSynapseWeight, int )
+        private int _untrainedCycles = 0;
+        private const int _maxUntrainedCycles = 10;
+
+        public Neuron(int numInputs, double learningRate, double maxSynapseWeight)
         {
             _synapseWeights = new double[numInputs];
             _firingInputs = new bool[numInputs];
@@ -36,12 +39,21 @@ namespace MLSin
                 accum += _synapseWeights[index]*inputs[index];
             }
 
+            if (_untrainedCycles++ > _maxUntrainedCycles)
+            {
+                _bias -= _learningRate;
+            }
+
+
             var output = accum - _bias;
             return  output > 0 ? output : 0;
         }
 
         public void Train()
         {
+            _untrainedCycles = 0;
+            _bias += _learningRate;
+
             for (int index = 0; index < _firingInputs.Length; index++)
             {
                 var change = (_maxSynapseWeight - _synapseWeights[index]) * _learningRate;

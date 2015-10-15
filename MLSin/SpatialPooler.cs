@@ -8,12 +8,12 @@ namespace MLSin
 {
     public class SpatialPooler
     {
-        private Neuron[] _neurons;
+        public Neuron[] _neurons;
         public int _maxActive;
 
         public SpatialPooler(int numNeurons, int numInputs, int maxActive)
         {
-            _neurons = Enumerable.Range(0, numNeurons).Select(i => new Neuron(numInputs)).ToArray();
+            _neurons = Enumerable.Range(0, numNeurons).Select(i => new Neuron(numInputs, 0.01, numInputs)).ToArray();
             _maxActive = maxActive;
         }
 
