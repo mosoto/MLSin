@@ -9,25 +9,29 @@ namespace MLSin
     public class SpatialPooler
     {
         public Neuron[] _neurons;
-        public int _maxActive;
 
-        public SpatialPooler(int numNeurons, int numInputs, int maxActive)
+        private const int numNeurons = 16;
+        private const int maxActive = 2;
+
+        public SpatialPooler()
         {
-            _neurons = Enumerable.Range(0, numNeurons).Select(i => new Neuron(numInputs, 0.01, numInputs)).ToArray();
-            _maxActive = maxActive;
+            _neurons = Enumerable.Range(0, numNeurons).Select(i => new Neuron()).ToArray();
         }
 
         public double[] ProcessInput(double[] input)
         {
             var activations = _neurons
                 .Select((neuron, index) => new {Activation = neuron.ProcessInput(input), Index = index})
+                .ToArray();
+            var activationIndexes = activations
                 .OrderBy(ni => ni.Activation)
                 .Where(ai => ai.Activation > 0)
-                .Take(_maxActive)
-                .Select(ni => ni.Index);
+                .Take(maxActive)
+                .Select(ni => ni.Index)
+                .ToArray();
 
             var output = new double[_neurons.Length];
-            foreach (var index in activations)
+            foreach (var index in activationIndexes)
             {
                 output[index] = 1;
                 _neurons[index].Train();

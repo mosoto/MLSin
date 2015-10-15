@@ -13,13 +13,13 @@ namespace MLSin
         {
             try
             {
-                var enumerator = CircularRange.NewRange(4, 2*Math.PI)
+                var enumerator = CircularRange.NewRange(8, 2*Math.PI)
                     .Select(ToDoubleArray)
                     .GetEnumerator();
 
-                SpatialPooler pooler = new SpatialPooler(10, 8, 2);
+                SpatialPooler pooler = new SpatialPooler();
 
-                int trainCycles = 100000;
+                int trainCycles = 500000;
                 for (int count = 0; count < trainCycles; count++)
                 {
                     enumerator.MoveNext();
@@ -32,6 +32,12 @@ namespace MLSin
                     {
                         Console.WriteLine($"> {inputStr}");
                         Console.WriteLine($"< {outputStr}");
+                        Console.WriteLine();
+
+                        if (count > trainCycles - 10)
+                        {
+                            Console.Write("");
+                        }
                     }
                 }
             }

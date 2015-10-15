@@ -8,26 +8,28 @@ namespace MLSin
 {
     public class Neuron
     {
-        private double[] _synapseWeights;
+        private double[] _synapseStrength;
         private double _bias;
         private bool[] _firingInputs;
-        private double _learningRate;
-        private double _maxSynapseWeight;
-
         private int _untrainedCycles = 0;
-        private const int _maxUntrainedCycles = 10;
 
-        public Neuron(int numInputs, double learningRate, double maxSynapseWeight)
+        private const double _learningRate = 0.1;
+        private const double _maxSynapseStrength = 1;
+        private const double _connectionBar = 0.25;
+        private const int _maxUntrainedCycles = 10;
+        private const int numInputs = 8;
+        Random random = new Random();
+
+        public Neuron()
         {
-            _synapseWeights = new double[numInputs];
+            _synapseStrength = new double[numInputs];
             _firingInputs = new bool[numInputs];
-            _learningRate = learningRate;
-            _maxSynapseWeight = maxSynapseWeight;
+            _bias = 0;
         }
 
         public double ProcessInput(double[] inputs)
         {
-            if (inputs.Length != _synapseWeights.Length)
+            if (inputs.Length != _synapseStrength.Length)
             {
                 throw new ArgumentException("There were more inputs than synapse weights.", nameof(inputs));
             }
@@ -36,7 +38,11 @@ namespace MLSin
             for (int index = 0; index < inputs.Length; index++)
             {
                 _firingInputs[index] = inputs[index] > 0;
-                accum += _synapseWeights[index]*inputs[index];
+
+                if (inputs[index] > 0 && _synapseStrength[index] > _connectionBar)
+                {
+                    accum++;
+                }
             }
 
             if (_untrainedCycles++ > _maxUntrainedCycles)
@@ -52,18 +58,34 @@ namespace MLSin
         public void Train()
         {
             _untrainedCycles = 0;
-            _bias += _learningRate;
+
+            var connectedSynapses = _synapseStrength.Where(s => s > _connectionBar).Count();
+
+            if (_bias + _learningRate < connectedSynapses)
+            {
+                _bias += _learningRate;
+            }
 
             for (int index = 0; index < _firingInputs.Length; index++)
             {
-                var change = (_maxSynapseWeight - _synapseWeights[index]) * _learningRate;
+                var change = random.NextDouble() * _learningRate;
                 
                 if (!_firingInputs[index])
                 {
                     change *= -1;
                 }
 
-                _synapseWeights[index] += change;
+                _synapseStrength[index] += change;
+
+                if (_synapseStrength[index] > _maxSynapseStrength)
+                {
+                    _synapseStrength[index] = _maxSynapseStrength;
+                }
+
+                if (_synapseStrength[index] < 0)
+                {
+                    _synapseStrength[index] = 0;
+                }
             }
         }
     }
