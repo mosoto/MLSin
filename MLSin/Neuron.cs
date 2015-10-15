@@ -18,7 +18,7 @@ namespace MLSin
         private const double _connectionBar = 0.25;
         private const int _maxUntrainedCycles = 10;
         private const int numInputs = 8;
-        Random random = new Random();
+        Random random = new Random(0);
 
         public Neuron()
         {
